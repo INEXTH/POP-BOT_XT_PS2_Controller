@@ -28,7 +28,7 @@
  * โดยให้กดปุ่ม PS2 Controller แล้วแสดงข้อความบนหน้าจอว่ากำลังกดปุ่มใดๆอยู่ 
  */
 
-#include <popxt.h>                                // เรียกใช้งานไลบรารีสำหรับ POP-BOT XT
+#include <popxt.h>                               // เรียกใช้งานไลบรารีสำหรับ POP-BOT XT
 #include <PS2X_lib.h>                            // เรียกใช้งานไลบรารีสำหรับ PS2 Controller
 
 #define PS2_DAT        20                        // กำหนดขา Data    เป็นขา 20
