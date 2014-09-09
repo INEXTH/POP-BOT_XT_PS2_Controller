@@ -60,20 +60,22 @@ void setup()
   glcdClear();                                    // เคลียร์ภาพทั้งหมดบนหน้าจอแสดงผล
   glcdMode(1);                                   // กำหนดให้หน้าจอแสดงผลเป็นแนวนอน
   
-  // กำหนดขาที่จะเชื่อมต่กับ PS2 Controller โดยมีการเก็บค่าที่ส่งกลับมาเป็น Integer เพื่อรู้ได้ว่าเชื่อมต่อได้หรือไม่
-  int error = ps2x.config_gamepad(PS2_CLK, PS2_CMD, PS2_SEL, PS2_DAT, false, false);
+  glcd(0, 0, "Connecting");                      // แสดงข้อความเพื่อให้รู้ว่ากำลังทำการเชื่อมต่อกับ PS2 Controller
+      
+  while(true)                                    // วนการทำงานเพื่อรอการเชื่อมต่อกับ PS2 Controller
+  {
+    // กำหนดขาที่จะเชื่อมต่กับ PS2 Controller โดยมีการเก็บค่าที่ส่งกลับมาเป็น Integer เพื่อรู้ได้ว่าเชื่อมต่อได้หรือไม่
+    int error = ps2x.config_gamepad(PS2_CLK, PS2_CMD, PS2_SEL, PS2_DAT, false, false);
   
-  if(error == 0)                                  // กรณีที่เชื่อมต่อได้ ไม่มีปัญหาอะไร (Error = 0)
-  {
-    glcd(0, 0, "Controller found");               // แสดงหน้าจอว่าเชื่อมต่อกับ PS2 Controller ได้
-  } 
-  else                                            // ถ้าไม่สามารถเชื่อมต่อกับ PS2 Controller 
-  {
-    glcd(0, 0, "Controller not found");           // แสดงหน้าจอว่าไม่สามารถเชื่อมต่อกับ PS2 Controller ได้
-    glcd(1, 0, "Check your controller");
-    glcd(2, 0, "And restart to try again");
-    while(true);                                  // วนไม่จำกัด เพื่อให้ผู้ใช้รีเซตบอร์ดเพื่อเชื่อมต่อใหม่
-  }  
+    if(error == 0)                               // กรณีที่เชื่อมต่อได้ ไม่มีปัญหาอะไร (Error = 0)
+    {
+      glcd(0, 0, "OK           ");               // แสดงข้อความว่าเชื่อมต่อกับ PS2 Controller เรียบร้อยแล้ว
+      delay(1000);                               // หน่วงเวลา 1 วินาที
+      glcdClear();                               // เคลียร์ภาพทั้งหมดบนหน้าจอแสดงผล
+      break;                                     // ออกจาก while(true)
+    } 
+    delay(500);                                  // หน่วงเวลา 500 มิลลิวินาทีเพื่อรอการเชื่อมต่อครั้งต่อไปในกรณีที่เชื่อมต่อไม่สำเร็จ
+  }
 }
 
 void loop()

@@ -58,19 +58,10 @@ void setup()
   glcdFillScreen(GLCD_WHITE);                    // กำหนดพื้นหลังของหน้าจอเป็นสีขาว
   setTextBackgroundColor(GLCD_WHITE);            // กำหนดพื้นหลังของตัวหนังสือเป็นสีขาว
 
-  // กำหนดขาที่จะเชื่อมต่กับ PS2 Controller โดยมีการเก็บค่าที่ส่งกลับมาเป็น Integer เพื่อรู้ได้ว่าเชื่อมต่อได้หรือไม่
-  int error = ps2x.config_gamepad(PS2_CLK, PS2_CMD, PS2_SEL, PS2_DAT, false, false);
-
-  
-  if(error == 0)                                 // กรณีที่เชื่อมต่อได้ ไม่มีปัญหาอะไร (Error = 0)
-  {
-    initGlcd(true);                              // เตรียมภาพบนหน้าจอ ในกรณีที่เชื่อมต่อกับ PS2 Controller ได้
-  }
-  else                                           // ถ้าไม่สามารถเชื่อมต่อกับ PS2 Controller 
-  {
-    initGlcd(false);                             // เตรียมภาพบนหน้าจอ ในกรณีที่เชื่อมต่อกับ PS2 Controller ได้
-    while(true);                                 // วนไม่จำกัด เพื่อให้ผู้ใช้รีเซตบอร์ดเพื่อเชื่อมต่อใหม่
-  }
+  setTextColor(GLCD_BLACK);                      // กำหนดตัวหนังสือเป็นสีดำ
+  glcd(0, 0, "Connecting");                      // แสดงข้อความเพื่อให้รู้ว่ากำลังทำการเชื่อมต่อกับ PS2 Controller
+      
+  initController();                              // เรียกฟังก์ชันทำการเชื่อมต่อกับ PS2 Controller
 }
 
 void loop() 
@@ -103,17 +94,30 @@ void loop()
   delay(50);                                     // หน่วงเวลา 50 มิลลิวินาที
 }
 
-void initGlcd(boolean isAvailable)               // ฟังก์ชันเตรียมภาพบนหน้าจอตอนเริ่มต้นทำงาน
+void initController() {                          // ฟังก์ชันสำหรับเชื่อมต่อกับ PS2 Controller
+  while(true)                                    // วนการทำงานเพื่อรอการเชื่อมต่อกับ PS2 Controller
+  {
+    // กำหนดขาที่จะเชื่อมต่กับ PS2 Controller โดยมีการเก็บค่าที่ส่งกลับมาเป็น Integer เพื่อรู้ได้ว่าเชื่อมต่อได้หรือไม่
+    int error = ps2x.config_gamepad(PS2_CLK, PS2_CMD, PS2_SEL, PS2_DAT, false, false);
+  
+    if(error == 0)                               // กรณีที่เชื่อมต่อได้ ไม่มีปัญหาอะไร (Error = 0)
+    {
+      initGlcd();                                // เตรียมภาพบนหน้าจอ
+      break;                                     // ออกจาก while(true)
+    } 
+    delay(500);                                  // หน่วงเวลา 500 มิลลิวินาทีเพื่อรอการเชื่อมต่อครั้งต่อไปในกรณีที่เชื่อมต่อไม่สำเร็จ
+  }
+}
+
+void initGlcd()                                  // ฟังก์ชันเตรียมภาพบนหน้าจอตอนเริ่มต้นทำงาน
 {
+  glcdClear();                                   // เคลียร์ภาพบนหน้าจอ
   setTextColor(GLCD_RED);                        // กำหนดตัวอักษรเป็นสีแดง
   glcd(0, 7, "PlayStation 2");                   // แสดงคำว่า PlayStation 2 ที่แถวแรกสุดตรงกลาง
   setTextColor(GLCD_BLUE);                       // กำหนดตัวอักษรเป็นสีแดง
   glcd(1, 9, "Controller");                      // แสดงคำว่า Controller ที่แถวที่สองตรงกลาง
   setTextColor(GLCD_BLACK);                      // กำหนดตัวอักษรเป็นสีแดง
-  if(isAvailable)                                // ถ้าสามารถเชื่อมต่อกับ PS2 Controller ได้
-    glcd(2, 13, "OK");                           // แสดงคำว่า OK ที่แถวที่สามตรงกลาง
-  else                                           // ถ้าเชื่อมต่อกับ PS2 Controller ไม่ได้
-    glcd(2, 11, "ERROR");                        // แสดงคำว่า ERROR ที่แถวที่สามตรงกลาง
+  glcd(2, 13, "OK");                             // แสดงคำว่า OK ที่แถวที่สามตรงกลาง
     
   drawButtonUpOff();                             // เรียกฟังก์ชันวาดภาพปุ่มขึ้นที่ยังไม่ถูกกด (เป็นภาพสีเทา)
   drawButtonDownOff();                           // เรียกฟังก์ชันวาดภาพปุ่มลงที่ยังไม่ถูกกด (เป็นภาพสีเทา)
